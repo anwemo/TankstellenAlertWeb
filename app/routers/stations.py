@@ -19,12 +19,12 @@ def get_stations(session: SessionDep) -> list[StationBase]:
 
 
 @router.get("/{id}")
-def get_station(id: str, session: SessionDep) -> StationBase:
+def get_station(station_id: str, session: SessionDep) -> StationBase:
     pass
 
 
 @router.get("/{id}/prices/current")
-def get_current_price(id: str, session: SessionDep) -> CurrentPriceRecord:
+def get_current_price(station_id: str, session: SessionDep) -> CurrentPriceRecord:
     """
     Returns a CurrentPriceRecord object for a single station.
     """
@@ -33,7 +33,7 @@ def get_current_price(id: str, session: SessionDep) -> CurrentPriceRecord:
 
 @router.get("/{id}/prices/history")
 def get_price_history(
-    id: str, session: SessionDep, period: TimePeriod = TimePeriod.week
+    station_id: str, session: SessionDep, period: TimePeriod = TimePeriod.week
 ) -> list[AggregatedPriceRecord]:
     """
     Returns a list of AggregatedPriceRecord objects for a single station.
