@@ -1,4 +1,4 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, HTTPException
 
 from app.dependencies import SessionDep
 from app.schemas import (
@@ -7,6 +7,7 @@ from app.schemas import (
     CurrentPriceRecord,
     AggregatedPriceRecord,
 )
+from app import crud
 
 router = APIRouter(
     prefix="/api/stations", responses={404: {"description": "Not found"}}
@@ -15,25 +16,31 @@ router = APIRouter(
 
 @router.get("/")
 def get_stations(session: SessionDep) -> list[StationBase]:
-    pass
+    return crud.get_stations(session)
 
 
-@router.get("/{id}")
+@router.get("/{station_id}")
 def get_station(station_id: str, session: SessionDep) -> StationBase:
-    pass
+    station = crud.get_station(station_id, session)
+    if not station:
+        raise HTTPException(status_code=404, detail=f"Station {station_id} not found")
+    return station
 
 
-@router.get("/{id}/prices/current")
+@router.get("/{station_id}/prices/current")
 def get_current_price(station_id: str, session: SessionDep) -> CurrentPriceRecord:
     """
     Returns a CurrentPriceRecord object for a single station.
     """
-    pass
+    prices = crud.get_current_price(station_id, session)
+    if not prices:
+        raise HTTPException(status_code=404, detail="No price record found")
+    return prices
 
 
-@router.get("/{id}/prices/history")
+@router.get("/{station_id}/prices/history")
 def get_price_history(
-    station_id: str, session: SessionDep, period: TimePeriod = TimePeriod.one_week
+    station_id: str, session: SessionDep, period: TimePeriod = TimePeriod.three_hours
 ) -> list[AggregatedPriceRecord]:
     """
     Returns a list of AggregatedPriceRecord objects for a single station.
@@ -41,4 +48,4 @@ def get_price_history(
     Prices are grouped and aggregated according to the selected TimePeriod.
     Use the period parameter to control the time range.
     """
-    pass
+    return crud.get_price_history(station_id, session, period)
