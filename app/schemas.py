@@ -83,10 +83,11 @@ class StationBase(BaseModel):
 
 
 class TimePeriod(int, Enum):
-    today = 1
-    three_days = 3
-    week = 7
-    month = 30
-    three_months = 90
-    six_months = 180
-    year = 365
+    three_hours = 3
+    one_day = 24
+    three_days = 72
+    one_week = 168
+    one_month = 720
+    three_months = 2160
+    six_months = 4380
+    one_year = 8760
