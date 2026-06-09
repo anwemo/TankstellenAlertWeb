@@ -33,7 +33,7 @@ def get_current_price(station_id: str, session: SessionDep) -> CurrentPriceRecor
 
 @router.get("/{id}/prices/history")
 def get_price_history(
-    station_id: str, session: SessionDep, period: TimePeriod = TimePeriod.week
+    station_id: str, session: SessionDep, period: TimePeriod = TimePeriod.one_week
 ) -> list[AggregatedPriceRecord]:
     """
     Returns a list of AggregatedPriceRecord objects for a single station.
