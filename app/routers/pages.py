@@ -39,3 +39,13 @@ def station_detail(request: Request, station_id: str, session: SessionDep):
         request=request,
         context={"station": station, "prices_json": prices_json}
     )
+
+
+@router.get("/charts", response_class=HTMLResponse)
+def charts_page(request: Request, session: SessionDep):
+    stations = crud.get_all_stations_with_current_prices(session)
+    return templates.TemplateResponse(
+        name="charts.html",
+        request=request,
+        context={"stations": stations, "time_periods": list(TimePeriod)}
+    )

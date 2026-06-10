@@ -21,7 +21,7 @@
   <div class="panel-section" id="stations-section">
     <div class="panel-section-label">Stations</div>
     {% for s in stations %}
-    {% set ci = loop.index0 % 5 %}
+    {% set ci = loop.index0 % 10 %}
     <label class="ctrl-check">
       <input type="checkbox" name="station" value="{{ s.id }}"
              data-ci="{{ ci }}"
@@ -43,14 +43,14 @@
   <div class="panel-section" id="fuels-section">
     <div class="panel-section-label">Fuel Type</div>
     <label class="ctrl-check">
-      <input type="checkbox" name="fuel" value="e5" checked>
-      <svg width="20" height="10" aria-hidden="true"><line x1="0" y1="5" x2="20" y2="5" stroke="#555" stroke-width="2.5"/></svg>
-      <span class="ctrl-fuel-label">E5 <span class="ctrl-fuel-style">solid</span></span>
-    </label>
-    <label class="ctrl-check">
       <input type="checkbox" name="fuel" value="e10" checked>
       <svg width="20" height="10" aria-hidden="true"><line x1="0" y1="5" x2="20" y2="5" stroke="#555" stroke-width="2.5" stroke-dasharray="5,3"/></svg>
-      <span class="ctrl-fuel-label">E10 <span class="ctrl-fuel-style">dashed</span></span>
+      <span class="ctrl-fuel-label">E5 <span class="ctrl-fuel-style">dashed</span></span>
+    </label>
+        <label class="ctrl-check">
+      <input type="checkbox" name="fuel" value="e5" checked>
+      <svg width="20" height="10" aria-hidden="true"><line x1="0" y1="5" x2="20" y2="5" stroke="#555" stroke-width="2.5"/></svg>
+      <span class="ctrl-fuel-label">E10 <span class="ctrl-fuel-style">solid</span></span>
     </label>
     <label class="ctrl-check">
       <input type="checkbox" name="fuel" value="diesel">
@@ -69,9 +69,9 @@
     <span class="charts-subtitle" id="charts-subtitle" aria-live="polite">Loading…</span>
     <div class="charts-topbar-right">
       <select class="time-dropdown" id="range-select" aria-label="Time range">
-        <option value="1">Last 24h</option>
-        <option value="7" selected>Last 7 days</option>
-        <option value="30">Last 30 days</option>
+        {% for period in time_periods %}
+        <option value="{{ period.value }}">{{ period.name | replace('_', ' ') | title }}</option>
+        {% endfor %}
       </select>
       {# Mobile: filter button opens drawer #}
       <button class="charts-filter-btn" id="charts-filter-btn" type="button"
@@ -93,10 +93,5 @@
 {% endblock %}
 
 {% block scripts %}
-<script>
-{# All station IDs/labels for JS. Price data fetched on demand via /api/prices/{id} #}
-window.CHARTS_STATIONS = {{ stations_json | safe }};
-{# [{id, brand, street, house_number, color_index, is_open}, ...] #}
-</script>
 <script src="{{ url_for('static', path='js/charts.js') }}"></script>
 {% endblock %}
