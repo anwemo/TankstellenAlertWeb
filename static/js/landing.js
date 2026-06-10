@@ -28,6 +28,21 @@
   updateStats();
   updateAllPrices()
 
+  function sortStationList() {
+    const rows = [...stationList.querySelectorAll('.station-row')];
+    rows.sort((a, b) => {
+      const aOpen = a.dataset.open === 'true';
+      const bOpen = b.dataset.open === 'true';
+      if (aOpen !== bOpen) return aOpen ? -1 : 1;
+      const aPrice = parseFloat(a.dataset[activeFuel]);
+      const bPrice = parseFloat(b.dataset[activeFuel]);
+      const aVal = isNaN(aPrice) ? Infinity : aPrice;
+      const bVal = isNaN(bPrice) ? Infinity : bPrice;
+      return aVal - bVal;
+    });
+    rows.forEach(row => stationList.appendChild(row));
+  }
+
   /* Set default mobile view (map) */
   if (window.innerWidth <= 680) {
     pageLanding.dataset.view = 'map';
@@ -44,6 +59,7 @@
       });
       updateAllPrices();
       updateStats();
+      sortStationList();
     });
   });
 

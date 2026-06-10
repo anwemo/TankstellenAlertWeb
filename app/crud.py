@@ -47,6 +47,13 @@ def get_all_stations_with_current_prices(session: Session):
         station_data["current_price"] = prices_by_station.get(station.id)
         station_with_price = StationBase.model_validate(station_data)
         stations_with_prices.append(station_with_price)
+
+    def sort_key(st):
+        cp = st.current_price
+        is_open = cp.is_open if cp else False
+        price = cp.e10 if cp and cp.e10 is not None else float("inf")
+        return not is_open, price
+    stations_with_prices.sort(key=sort_key)
     return stations_with_prices
 
 
