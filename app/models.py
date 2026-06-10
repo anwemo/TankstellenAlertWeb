@@ -56,3 +56,4 @@ class PriceHistory(Base):
             f"PriceHistory(id={self.id!r}, station_id={self.station_id!r}, is_open={self.is_open!r},"
             f"e5={self.e5!r}, e10={self.e10!r}, diesel={self.diesel!r}, timestamp={self.timestamp!r})"
         )
+    

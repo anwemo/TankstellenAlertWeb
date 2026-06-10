@@ -15,13 +15,13 @@ router = APIRouter(
 
 
 @router.get("/")
-def get_stations(session: SessionDep) -> list[StationBase]:
-    return crud.get_stations(session)
+def get_all_stations_with_current_prices(session: SessionDep) -> list[StationBase]:
+    return crud.get_all_stations_with_current_prices(session)
 
 
 @router.get("/{station_id}")
 def get_station(station_id: str, session: SessionDep) -> StationBase:
-    station = crud.get_station(station_id, session)
+    station = crud.get_station_with_current_price(station_id, session)
     if not station:
         raise HTTPException(status_code=404, detail=f"Station {station_id} not found")
     return station
