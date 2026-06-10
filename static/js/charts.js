@@ -11,9 +11,7 @@
 (function () {
   'use strict';
 
-  /* ── State ───────────────────────────────────────────────── */
-  let activeDays = 7;
-  /* Cache: { [stationId]: { [days]: [{time, e5, e10, diesel}] } } */
+  /* Cache: { [stationId]: { [period]: [{timestamp, min_e5, max_e5, avg_e5, min_e10, ..., avg_diesel}] } } */
   const priceCache = {};
   let chart;
 
@@ -29,6 +27,9 @@
   const chartCanvas    = document.getElementById('multi-chart');
   const stationChecks  = document.querySelectorAll('input[name="station"]');
   const fuelChecks     = document.querySelectorAll('#fuels-section input[name="fuel"]');
+
+  /* ── State ───────────────────────────────────────────────── */
+  let activePeriod = parseInt(rangeSelect.value, 10);
 
   /* ── Init ────────────────────────────────────────────────── */
   initChart();
@@ -74,7 +75,7 @@
   }));
   if (rangeSelect) {
     rangeSelect.addEventListener('change', () => {
-      activeDays = parseInt(rangeSelect.value, 10);
+      activePeriod = parseInt(rangeSelect.value, 10);
       loadAndRender();
     });
   }
@@ -105,6 +106,13 @@
   }
 
   /* ── Fetch + render ──────────────────────────────────────── */
+  function formatTimestamp(ts) {
+    const d = new Date(ts);
+    if (activePeriod <= 24) {
+      return d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    }
+    return d.toLocaleDateString([], { month: 'short', day: 'numeric' });
+  }
   async function loadAndRender() {
     if (!chart) return;
 
@@ -120,71 +128,71 @@
       return;
     }
 
-    /* Fetch price data for all selected stations (cache per station+days) */
-    const fetchPromises = selectedStations.map(id => fetchPrices(id, activeDays));
-    const results = await Promise.allSettled(fetchPromises);
+    /* Fetch price data for all selected stations (cache per station+period) */
+      const fetchPromises = selectedStations.map(id => fetchPrices(id, activePeriod));
+      const results = await Promise.allSettled(fetchPromises);
 
-    /* Build a merged timeline (union of all timestamps) */
-    const timeSet = new Set();
-    results.forEach((r, i) => {
-      if (r.status === 'fulfilled') r.value.forEach(p => timeSet.add(p.time));
-    });
-    const labels = [...timeSet].sort();
+      /* Build a merged timeline (union of all timestamps) */
+      const timeSet = new Set();
+      results.forEach((r, i) => {
+        if (r.status === 'fulfilled') r.value.forEach(p => timeSet.add(p.timestamp));
+      });
+      const labels = [...timeSet].sort();
 
-    /* Build Chart.js datasets: one per (station × fuel) combination */
-    const datasets = [];
-    results.forEach((result, si) => {
-      if (result.status !== 'fulfilled') return;
-      const stationData = result.value;
-      const stationId   = selectedStations[si];
-      const stationMeta = (window.CHARTS_STATIONS || []).find(s => s.id === stationId);
-      if (!stationMeta) return;
+      /* Build Chart.js datasets: one per (station × fuel) combination */
+      const datasets = [];
+      results.forEach((result, si) => {
+        if (result.status !== 'fulfilled') return;
+        const stationData = result.value;
+        const stationId   = selectedStations[si];
+        const checkbox    = document.querySelector(`input[name="station"][value="${stationId}"]`);
+        if (!checkbox) return;
 
-      const ci    = stationMeta.color_index ?? (si % 5);
-      const color = STATION_COLORS[ci];
+        const ci    = parseInt(checkbox.dataset.ci, 10) || 0;
+        const color = STATION_COLORS[ci];
+        const brand = checkbox.dataset.brand;
 
-      selectedFuels.forEach(fuel => {
-        /* Map station data to the merged timeline */
-        const timeToPrice = Object.fromEntries(stationData.map(p => [p.time, p[fuel]]));
-        const dataPoints  = labels.map(t => {
-          const v = timeToPrice[t];
-          return v != null ? parseFloat(v) : null;
-        });
+        selectedFuels.forEach(fuel => {
+          /* Map station data to the merged timeline */
+          const timeToPrice = Object.fromEntries(stationData.map(p => [p.timestamp, p[`avg_${fuel}`]]));
+          const dataPoints  = labels.map(t => {
+            const v = timeToPrice[t];
+            return v != null ? parseFloat(v) : null;
+          });
 
-        datasets.push({
-          label:           `${stationMeta.brand} ${FUEL_LABEL[fuel]}`,
-          data:            dataPoints,
-          borderColor:     color,
-          borderDash:      FUEL_DASH[fuel],
-          borderWidth:     2.5,
-          backgroundColor: 'transparent',
-          spanGaps:        true,
-          tension:         0.3,
-          /* Store metadata for tooltip */
-          _station: stationMeta.brand,
-          _fuel:    fuel,
+          datasets.push({
+            label:           `${brand} ${FUEL_LABEL[fuel]}`,
+            data:            dataPoints,
+            borderColor:     color,
+            borderDash:      FUEL_DASH[fuel],
+            borderWidth:     2.5,
+            backgroundColor: 'transparent',
+            spanGaps:        true,
+            tension:         0,
+            _station: brand,
+            _fuel:    fuel,
+          });
         });
       });
-    });
 
-    chart.data.labels   = labels;
-    chart.data.datasets = datasets;
-    chart.update();
+      chart.data.labels   = labels.map(formatTimestamp);
+      chart.data.datasets = datasets;
+      chart.update();
 
-    /* Update subtitle */
-    const stationNames = selectedStations
-      .map(id => (window.CHARTS_STATIONS || []).find(s => s.id === id)?.brand)
-      .filter(Boolean);
-    const fuelNames = selectedFuels.map(f => FUEL_LABEL[f]);
-    subtitle.textContent = `${stationNames.join(', ')} — ${fuelNames.join(', ')}`;
-  }
+      /* Update subtitle */
+      const stationNames = selectedStations
+        .map(id => document.querySelector(`input[name="station"][value="${id}"]`)?.dataset.brand)
+        .filter(Boolean);
+      const fuelNames = selectedFuels.map(f => FUEL_LABEL[f]);
+      subtitle.textContent = `${stationNames.join(', ')} — ${fuelNames.join(', ')}`;
+    }
 
   /* ── API fetch with caching ──────────────────────────────── */
-  async function fetchPrices(stationId, days) {
-    const key = `${stationId}:${days}`;
+  async function fetchPrices(stationId, period) {
+    const key = `${stationId}:${period}`;
     if (priceCache[key]) return priceCache[key];
 
-    const resp = await fetch(`/api/prices/${stationId}?days=${days}`);
+    const resp = await fetch(`/api/stations/${stationId}/prices/history?period=${period}`);
     if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
     const data = await resp.json();
     priceCache[key] = data;
