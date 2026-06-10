@@ -6,7 +6,7 @@
   'use strict';
 
   /* ── State ───────────────────────────────────────────────── */
-  let activeFuel   = 'e5';
+  let activeFuel   = 'e10';
   let selectedId   = null;
   const markers    = {};   /* { stationId: L.Marker } */
   let leafletMap;
@@ -26,6 +26,7 @@
   /* ── Init ────────────────────────────────────────────────── */
   initMap();
   updateStats();
+  updateAllPrices()
 
   /* Set default mobile view (map) */
   if (window.innerWidth <= 680) {
@@ -122,7 +123,8 @@
       if (!el) return;
       const lbl = el.querySelector('.leaflet-pin-label');
       if (lbl) {
-        lbl.textContent = isOpen && raw ? formatPrice(raw) : 'closed';
+        const stationData = (window.STATION_DATA || []).find(s => s.id === id);
+        lbl.textContent = isOpen && raw ? `${stationData.brand}\u00A0\u00A0\u00A0${formatPrice(raw)}` : 'closed';
         /* Match border color to station color */
         const ci = row.dataset.ci || 0;
         lbl.style.borderColor = STATION_COLORS[ci] || '';
@@ -132,10 +134,10 @@
 
   /* ── Quick stats (cheapest / highest / avg) ──────────────── */
   function updateStats() {
-    statLabel.textContent = `${FUEL_LABEL[activeFuel]} — today`;
-    const open = (window.STATION_DATA || []).filter(s => s.is_open && s[`latest_${activeFuel}`]);
+    statLabel.textContent = `${FUEL_LABEL[activeFuel]} — currently`;
+    const open = (window.STATION_DATA || []).filter(s => s.current_price?.is_open && s.current_price?.[activeFuel]);
     if (!open.length) { [statMin, statMax, statAvg].forEach(el => el.textContent = '—'); return; }
-    const prices = open.map(s => parseFloat(s[`latest_${activeFuel}`]));
+    const prices = open.map(s => parseFloat(s.current_price[activeFuel]));
     statMin.textContent = formatPrice(Math.min(...prices));
     statMax.textContent = formatPrice(Math.max(...prices));
     statAvg.textContent = formatPrice(prices.reduce((a, b) => a + b, 0) / prices.length);
@@ -151,7 +153,9 @@
     const avgLat = withCoords.reduce((s, st) => s + st.lat, 0) / withCoords.length;
     const avgLng = withCoords.reduce((s, st) => s + st.lng, 0) / withCoords.length;
 
-    leafletMap = L.map('map', { zoomControl: true }).setView([avgLat, avgLng], 13);
+    leafletMap = L.map('map', { zoomControl: true });
+    const bounds = L.latLngBounds(withCoords.map(s => [s.lat, s.lng]));
+    leafletMap.fitBounds(bounds, { padding: [50, 50] });
 
     /* CartoDB Positron — neutral light tiles, no API key required */
     L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
@@ -164,14 +168,14 @@
     withCoords.forEach(station => {
       const ci    = station.color_index ?? 0;
       const color = STATION_COLORS[ci];
-      const raw   = station[`latest_${activeFuel}`];
-      const label = station.is_open && raw ? formatPrice(raw) : 'closed';
+      const raw   = station.current_price?.[activeFuel];
+      const label = station.current_price?.is_open && raw ? `${station.brand}&nbsp;&nbsp;${formatPrice(raw)}` : 'closed';
 
       const icon = L.divIcon({
         className: '',
         html: `<div class="leaflet-pin-wrap" data-id="${station.id}">
           <div class="leaflet-pin-label" style="border-color:${color}">${label}</div>
-          <div class="leaflet-pin-dot${station.is_open ? '' : ' closed'}" style="background:${color}"></div>
+          <div class="leaflet-pin-dot${station.current_price?.is_open ? '' : ' closed'}" style="background:${color}"></div>
         </div>`,
         iconSize:    [64, 44],
         iconAnchor:  [32, 44],
@@ -197,23 +201,23 @@
   /* ── Mobile bottom sheet ─────────────────────────────────── */
   function renderBottomSheet(id) {
     if (!id) { bottomSheet.hidden = true; return; }
-    const st = (window.STATION_DATA || []).find(s => s.id === id);
-    if (!st || !st.is_open) { bottomSheet.hidden = true; return; }
+    const station = (window.STATION_DATA || []).find(s => s.id === id);
+    if (!station || !station.current_price?.is_open) { bottomSheet.hidden = true; return; }
 
-    const addr = [st.street, st.house_number].filter(Boolean).join(' ');
+    const addr = [station.street, station.house_number].filter(Boolean).join(' ');
     sheetBody.innerHTML = `
       <div class="sheet-row">
         <div class="sheet-info">
-          <strong class="sheet-brand">${st.brand}</strong>
+          <strong class="sheet-brand">${station.brand}</strong>
           <span class="sheet-street">${addr}</span>
         </div>
         <span class="badge badge-open">OPEN</span>
-        <a href="/station/${st.id}" class="btn-details">Details →</a>
+        <a href="/station/${station.id}" class="btn-details">Details →</a>
       </div>
       <div class="price-cells">
-        <div class="price-cell e5"><span class="val">${formatPrice(st.latest_e5)}</span><span class="lbl">E5</span></div>
-        <div class="price-cell e10"><span class="val">${formatPrice(st.latest_e10)}</span><span class="lbl">E10</span></div>
-        <div class="price-cell diesel"><span class="val">${formatPrice(st.latest_diesel)}</span><span class="lbl">Diesel</span></div>
+        <div class="price-cell e5"><span class="val">${formatPrice(station.current_price?.e5)}</span><span class="lbl">E5</span></div>
+        <div class="price-cell e10"><span class="val">${formatPrice(station.current_price?.e10)}</span><span class="lbl">E10</span></div>
+        <div class="price-cell diesel"><span class="val">${formatPrice(station.current_price?.diesel)}</span><span class="lbl">Diesel</span></div>
       </div>`;
     bottomSheet.hidden = false;
   }

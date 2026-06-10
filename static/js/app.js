@@ -38,7 +38,7 @@ const FUEL_LABEL = { e5: 'E5', e10: 'E10', diesel: 'Diesel' };
 /** Format a price number to 3 decimal places, or return '—'. */
 function formatPrice(n) {
   if (n == null || n === '') return '—';
-  return parseFloat(n).toFixed(3);
+  return parseFloat(n).toFixed(3) + ' €';
 }
 
 /** Human-readable "N min ago" / "Xh ago" from an ISO timestamp string. */

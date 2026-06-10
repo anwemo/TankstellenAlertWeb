@@ -165,29 +165,29 @@ body {
    or: [data-theme="dark"] { ... }
    Map tiles: CartoDB Dark Matter
    ═══════════════════════════════════════════════════════════════ */
-@media (prefers-color-scheme: dark) {
-  :root {
-    --bg:           #090C08;
-    --surface:      #1E1B27;
-    --surface-sel:  #2E2A3B;
-    --border:       #3A3648;
-    --text:         #F5F7F3;
-    --text-muted:   #757083;
-    --nav-bg:       #090C08;
-    --accent:       #859D6C;   /* sage green */
-    --accent-light: #1E2A18;
-    /* alert stays the same — EF8354 coral is universal */
-    --badge-open-bg:     #1E2A18;
-    --badge-open-border: #5A7048;
-    --badge-open-text:   #A8C282;
-    --badge-closed-bg:   #1E1B27;
-    --badge-closed-border: #3A3648;
-    --badge-closed-text: #757083;
-    /* Station colors: same hues, brighter for dark backgrounds */
-    --station-0: oklch(65% 0.09 232);
-    --station-1: oklch(65% 0.09 290);
-    --station-2: oklch(65% 0.09 165);
-    --station-3: oklch(65% 0.09 105);
-    --station-4: oklch(65% 0.09 320);
-  }
-}
+/*@media (prefers-color-scheme: dark) {*/
+/*  :root {*/
+/*    --bg:           #090C08;*/
+/*    --surface:      #1E1B27;*/
+/*    --surface-sel:  #2E2A3B;*/
+/*    --border:       #3A3648;*/
+/*    --text:         #F5F7F3;*/
+/*    --text-muted:   #757083;*/
+/*    --nav-bg:       #090C08;*/
+/*    --accent:       #859D6C;   !* sage green *!*/
+/*    --accent-light: #1E2A18;*/
+/*    !* alert stays the same — EF8354 coral is universal *!*/
+/*    --badge-open-bg:     #1E2A18;*/
+/*    --badge-open-border: #5A7048;*/
+/*    --badge-open-text:   #A8C282;*/
+/*    --badge-closed-bg:   #1E1B27;*/
+/*    --badge-closed-border: #3A3648;*/
+/*    --badge-closed-text: #757083;*/
+/*    !* Station colors: same hues, brighter for dark backgrounds *!*/
+/*    --station-0: oklch(65% 0.09 232);*/
+/*    --station-1: oklch(65% 0.09 290);*/
+/*    --station-2: oklch(65% 0.09 165);*/
+/*    --station-3: oklch(65% 0.09 105);*/
+/*    --station-4: oklch(65% 0.09 320);*/
+/*  }*/
+/*}*/
