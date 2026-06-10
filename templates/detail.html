@@ -12,7 +12,7 @@
   <div class="hero-brand">{{ station.brand }}</div>
   <div class="hero-address">{{ station.street }}{% if station.house_number %} {{ station.house_number }}{% endif %}{% if station.post_code %} · {{ station.post_code }}{% endif %}{% if station.city %} {{ station.city }}{% endif %}</div>
   <div class="hero-meta">
-    {% if latest.is_open %}
+    {% if station.current_price.is_open %}
     <span class="badge badge-open">OPEN</span>
     {% else %}
     <span class="badge badge-closed">CLOSED</span>
@@ -38,15 +38,15 @@
 {# ── Color-coded price cells ─────────────────────────────────── #}
 <div class="price-cells" role="group" aria-label="Current fuel prices">
   <div class="price-cell e5">
-    <span class="val">{% if latest.e5 %}{{ "%.3f"|format(latest.e5|float) }}{% else %}—{% endif %}</span>
+    <span class="val">{% if station.current_price.e5 %}{{ "%.3f"|format(station.current_price.e5|float) }}{% else %}—{% endif %}</span>
     <span class="lbl">E5</span>
   </div>
   <div class="price-cell e10">
-    <span class="val">{% if latest.e10 %}{{ "%.3f"|format(latest.e10|float) }}{% else %}—{% endif %}</span>
+    <span class="val">{% if station.current_price.e10 %}{{ "%.3f"|format(station.current_price.e10|float) }}{% else %}—{% endif %}</span>
     <span class="lbl">E10</span>
   </div>
   <div class="price-cell diesel">
-    <span class="val">{% if latest.diesel %}{{ "%.3f"|format(latest.diesel|float) }}{% else %}—{% endif %}</span>
+    <span class="val">{% if station.current_price.diesel %}{{ "%.3f"|format(station.current_price.diesel|float) }}{% else %}—{% endif %}</span>
     <span class="lbl">Diesel</span>
   </div>
 </div>
@@ -70,11 +70,11 @@
       <svg width="18" height="10" aria-hidden="true"><line x1="0" y1="5" x2="18" y2="5" stroke="#C8A000" stroke-width="2.5" stroke-dasharray="2,4"/></svg>
       Diesel
     </label>
-    <select class="time-dropdown" id="range-select" aria-label="Time range">
-      <option value="1">Last 24h</option>
-      <option value="7" selected>Last 7 days</option>
-      <option value="30">Last 30 days</option>
-    </select>
+<!--    <select class="time-dropdown" id="range-select" aria-label="Time range">-->
+<!--      <option value="1">Last 24h</option>-->
+<!--      <option value="7" selected>Last 7 days</option>-->
+<!--      <option value="30">Last 30 days</option>-->
+<!--    </select>-->
   </div>
   <div class="chart-area">
     <canvas id="price-chart" aria-label="Price history chart"></canvas>
@@ -90,10 +90,10 @@
     <div>
       <div class="alert-title">
         E5 dropped to {{ "%.3f"|format(station.last_alert_price|float) }}
-        {% if latest.e5 %}(−{{ "%.3f"|format((latest.e5|float) - (station.last_alert_price|float)) | replace('-','') }}){% endif %}
+        {% if station.current_price.e5 %}(−{{ "%.3f"|format((station.current_price.e5|float) - (station.last_alert_price|float)) | replace('-','') }}){% endif %}
       </div>
       <div class="alert-sub">
-        {{ station.last_alert_time.strftime('%b %-d, %H:%M') }}
+        {{ station.last_alert_time.strftime('%b %d, %H:%M') }}
       </div>
     </div>
   </div>

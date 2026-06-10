@@ -80,7 +80,7 @@
   function makeDataset(fuel) {
     return {
       label: FUEL_LABEL[fuel],
-      data: data.map(p => p[fuel] != null ? parseFloat(p[fuel]) : null),
+      data: data.map(p => p[`avg_${fuel}`] != null ? parseFloat(p[`avg_${fuel}`]) : null),
       borderColor: FUEL_STROKE[fuel],
       borderDash: FUEL_DASH[fuel],
       borderWidth: 2.5,
@@ -93,7 +93,7 @@
   const chart = new Chart(chartCanvas, {
     type: 'line',
     data: {
-      labels: data.map(p => p.time),
+      labels: data.map(p => new Date(p.timestamp).toLocaleTimeString([], {hour: '2-digit', minute: '2-digit'})),
       datasets: [makeDataset('e5'), makeDataset('e10'), makeDataset('diesel')],
     },
     options: {
@@ -129,23 +129,23 @@
     });
   });
 
-  /* ── Time range dropdown ─────────────────────────────────── */
-  const rangeSelect = document.getElementById('range-select');
-  if (rangeSelect) {
-    rangeSelect.addEventListener('change', () => {
-      const days = parseInt(rangeSelect.value, 10);
-      /* Fetch new data from API and rebuild chart */
-      fetch(`/api/prices/${window.STATION_ID}?days=${days}`)
-        .then(r => r.json())
-        .then(newData => {
-          chart.data.labels = newData.map(p => p.time);
-          ['e5', 'e10', 'diesel'].forEach((fuel, i) => {
-            chart.data.datasets[i].data = newData.map(p => p[fuel] != null ? parseFloat(p[fuel]) : null);
-          });
-          chart.update();
-        })
-        .catch(err => console.error('Failed to load price data:', err));
-    });
-  }
+  // /* ── Time range dropdown ─────────────────────────────────── */
+  // const rangeSelect = document.getElementById('range-select');
+  // if (rangeSelect) {
+  //   rangeSelect.addEventListener('change', () => {
+  //     const days = parseInt(rangeSelect.value, 10);
+  //     /* Fetch new data from API and rebuild chart */
+  //     fetch(`/api/prices/${window.STATION_ID}?days=${days}`)
+  //       .then(r => r.json())
+  //       .then(newData => {
+  //         chart.data.labels = newData.map(p => p.time);
+  //         ['e5', 'e10', 'diesel'].forEach((fuel, i) => {
+  //           chart.data.datasets[i].data = newData.map(p => p[fuel] != null ? parseFloat(p[fuel]) : null);
+  //         });
+  //         chart.update();
+  //       })
+  //       .catch(err => console.error('Failed to load price data:', err));
+  //   });
+  // }
 
 })();
