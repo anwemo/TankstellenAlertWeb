@@ -4,26 +4,6 @@ from pydantic import BaseModel, ConfigDict
 from enum import Enum
 
 
-class CurrentPriceRecord(BaseModel):
-    model_config = ConfigDict(
-        from_attributes=True,
-        json_schema_extra={
-            "example": {
-                "e5": 1.799,
-                "e10": 1.779,
-                "diesel": 1.699,
-                "is_open": True,
-                "timestamp": "2026-06-09T12:00:00",
-            }
-        },
-    )
-    e5: Decimal | None
-    e10: Decimal | None
-    diesel: Decimal | None
-    is_open: bool
-    timestamp: datetime
-
-
 class AggregatedPriceRecord(BaseModel):
     model_config = ConfigDict(
         from_attributes=True,
@@ -54,6 +34,26 @@ class AggregatedPriceRecord(BaseModel):
     timestamp: datetime
 
 
+class CurrentPriceRecord(BaseModel):
+    model_config = ConfigDict(
+        from_attributes=True,
+        json_schema_extra={
+            "example": {
+                "e5": 1.799,
+                "e10": 1.779,
+                "diesel": 1.699,
+                "is_open": True,
+                "timestamp": "2026-06-09T12:00:00",
+            }
+        },
+    )
+    e5: Decimal | None
+    e10: Decimal | None
+    diesel: Decimal | None
+    is_open: bool
+    timestamp: datetime
+
+
 class StationBase(BaseModel):
     model_config = ConfigDict(
         from_attributes=True,
@@ -80,6 +80,10 @@ class StationBase(BaseModel):
     city: str | None
     lat: float | None
     lng: float | None
+    last_updated: datetime | None
+    last_alert_time: datetime | None
+    last_alert_price: Decimal | None
+    current_price: CurrentPriceRecord | None
 
 
 class TimePeriod(int, Enum):

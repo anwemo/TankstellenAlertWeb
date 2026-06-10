@@ -4,7 +4,7 @@ from sqlalchemy import select, func
 from sqlalchemy.orm import Session
 
 from app.models import Station, PriceHistory
-from app.schemas import AggregatedPriceRecord
+from app.schemas import AggregatedPriceRecord, StationBase
 
 
 def get_stations(session: Session):
@@ -15,6 +15,17 @@ def get_station(station_id: str, session: Session):
     return session.get(Station, station_id)
 
 
+def get_current_prices(session: Session):
+    subquery = (
+        select(func.max(PriceHistory.id))
+        .group_by(PriceHistory.station_id)
+        .scalar_subquery()
+    )
+    return session.scalars(
+        select(PriceHistory).where(PriceHistory.id.in_(subquery))
+    ).all()
+
+
 def get_current_price(station_id: str, session: Session):
     return session.scalar(
         select(PriceHistory)
@@ -22,6 +33,29 @@ def get_current_price(station_id: str, session: Session):
         .order_by(PriceHistory.timestamp.desc())
         .limit(1)
     )
+
+
+def get_all_stations_with_current_prices(session: Session):
+    stations = get_stations(session)
+    price_records = get_current_prices(session)
+    prices_by_station = {
+        price_record.station_id: price_record for price_record in price_records
+    }
+    stations_with_prices = []
+    for station in stations:
+        station_data = station.to_dict()
+        station_data["current_price"] = prices_by_station.get(station.id)
+        station_with_price = StationBase.model_validate(station_data)
+        stations_with_prices.append(station_with_price)
+    return stations_with_prices
+
+
+def get_station_with_current_price(station_id: str, session: Session):
+    station = get_station(station_id, session)
+    station_data = station.to_dict()  # type: ignore
+    current_price = get_current_price(station_id, session)
+    station_data["current_price"] = current_price
+    return StationBase.model_validate(station_data)
 
 
 def _get_strftime_format(period: int) -> str:
