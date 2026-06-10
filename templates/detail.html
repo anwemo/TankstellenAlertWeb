@@ -17,9 +17,9 @@
     {% else %}
     <span class="badge badge-closed">CLOSED</span>
     {% endif %}
-    {% if station.last_updated %}
-    <span class="hero-updated" id="last-updated" data-ts="{{ station.last_updated.isoformat() }}">
-      Updated {{ station.last_updated.strftime('%H:%M') }}
+    {% if station.current_price.timestamp %}
+    <span class="hero-updated" id="last-updated" data-ts="{{ station.current_price.timestamp.isoformat() }}">
+      Updated {{ station.current_price.timestamp.strftime('%H:%M') }}
     </span>
     {% endif %}
     {% if station.lat and station.lng %}
@@ -56,13 +56,13 @@
   <div class="chart-controls">
     {# Fuel type checkboxes with line style indicators #}
     <label class="fuel-check">
-      <input type="checkbox" name="fuel" value="e5" checked>
-      <svg width="18" height="10" aria-hidden="true"><line x1="0" y1="5" x2="18" y2="5" stroke="#5B9BD5" stroke-width="2.5"/></svg>
+      <input type="checkbox" name="fuel" value="e10" checked>
+      <svg width="18" height="10" aria-hidden="true"><line x1="0" y1="5" x2="18" y2="5" stroke="#6AB55B" stroke-width="2.5" stroke-dasharray="5,3"/></svg>
       E5
     </label>
     <label class="fuel-check">
-      <input type="checkbox" name="fuel" value="e10" checked>
-      <svg width="18" height="10" aria-hidden="true"><line x1="0" y1="5" x2="18" y2="5" stroke="#6AB55B" stroke-width="2.5" stroke-dasharray="5,3"/></svg>
+      <input type="checkbox" name="fuel" value="e5" checked>
+      <svg width="18" height="10" aria-hidden="true"><line x1="0" y1="5" x2="18" y2="5" stroke="#5B9BD5" stroke-width="2.5"/></svg>
       E10
     </label>
     <label class="fuel-check">

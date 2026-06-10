@@ -99,7 +99,7 @@
    Pass all station fields needed by landing.js.
    Backend must serialize to JSON: id, brand, street, house_number,
    lat, lng, is_open, latest_e5, latest_e10, latest_diesel,
-   last_alert_time, color_index (= loop.index0 % 5)
+   last_alert_time, color_index (= loop.index0 % 10)
 #}
 <script>window.STATION_DATA = {{ stations_json | safe }};</script>
 <script src="{{ url_for('static', path='js/landing.js') }}"></script>

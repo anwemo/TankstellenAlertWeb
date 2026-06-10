@@ -50,14 +50,18 @@
   --stat-high-tx:   #5A2A2A;
 }
 
-/* ── Station chart colors (equiluminant, oklch L=50% C=0.09) ── */
+/* ── Station chart colors ── */
 :root {
-  --station-0: oklch(50% 0.09 232);  /* Shell  — steel blue  */
-  --station-1: oklch(50% 0.09 290);  /* Aral   — violet      */
-  --station-2: oklch(50% 0.09 165);  /* BP     — teal        */
-  --station-3: oklch(50% 0.09 105);  /* Total  — olive       */
-  --station-4: oklch(50% 0.09 320);  /* Esso   — mauve       */
-  /* Add more if needed at same L=50% C=0.09, new hue value */
+  --station-0: #2563EB;
+  --station-1: #DC2626;
+  --station-2: #059669;
+  --station-3: #D97706;
+  --station-4: #7C3AED;
+  --station-5: #0891B2;
+  --station-6: #EA580C;
+  --station-7: #65A30D;
+  --station-8: #DB2777;
+  --station-9: #4F46E5;
 }
 
 /* ── Fuel type price cell colors ────────────────────────────── */

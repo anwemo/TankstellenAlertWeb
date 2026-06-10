@@ -5,15 +5,17 @@
 
 /* ── Design tokens (mirrors design-tokens.css for JS use) ────── */
 
-/** Equiluminant station colors (oklch L=50% C=0.09, hue every ~65°).
- *  Index matches the `color_index` field passed by the backend.
- *  Avoids H 20–65° (coral alert zone). */
 const STATION_COLORS = [
-  'oklch(50% 0.09 232)',  /* 0 — steel blue (anchors to --accent) */
-  'oklch(50% 0.09 290)',  /* 1 — muted violet */
-  'oklch(50% 0.09 165)',  /* 2 — muted teal   */
-  'oklch(50% 0.09 105)',  /* 3 — muted olive  */
-  'oklch(50% 0.09 320)',  /* 4 — muted mauve  */
+  '#2563EB',  /* blue */
+  '#DC2626',  /* red */
+  '#059669',  /* green */
+  '#D97706',  /* orange */
+  '#7C3AED',  /* purple */
+  '#0891B2',  /* cyan */
+  '#EA580C',  /* dark orange */
+  '#65A30D',  /* lime */
+  '#DB2777',  /* pink */
+  '#4F46E5',  /* indigo */
 ];
 
 /** Chart.js stroke color per fuel type. */
@@ -25,9 +27,9 @@ const FUEL_STROKE = {
 
 /** Chart.js border-dash pattern per fuel type (solid / dashed / dotted). */
 const FUEL_DASH = {
-  e5:     [],
-  e10:    [5, 3],
-  diesel: [2, 4],
+  e5:     [10, 8],
+  e10:    [],
+  diesel: [3, 6],
 };
 
 /** Human-readable fuel labels. */
