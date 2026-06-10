@@ -1,0 +1,116 @@
+{% extends "base.html" %}
+{% set active_page = 'landing' %}
+{% block title %}TankstellenAlert{% endblock %}
+{% block page_class %}page-landing{% endblock %}
+
+{% block content %}
+{# ── Sidebar ──────────────────────────────────────────────────
+   Desktop: always visible left panel (300px)
+   Mobile:  shown when data-view="list", hidden when data-view="map"
+#}
+<aside class="sidebar" id="sidebar" aria-label="Station list">
+
+  {# Fuel type selector #}
+  <div class="fuel-pills" role="group" aria-label="Fuel type filter">
+    <button class="pill active" data-fuel="e5"     aria-pressed="true">E5</button>
+    <button class="pill"        data-fuel="e10"    aria-pressed="false">E10</button>
+    <button class="pill"        data-fuel="diesel" aria-pressed="false">Diesel</button>
+  </div>
+
+  {# Station list #}
+  <ul class="station-list" id="station-list" role="listbox" aria-label="Stations">
+    {% for s in stations %}
+    {% set ci = loop.index0 % 5 %}
+    <li class="station-row{% if not s.current_price.is_open %} closed{% endif %}"
+        role="option"
+        aria-selected="false"
+        data-id="{{ s.id }}"
+        data-ci="{{ ci }}"
+        data-open="{{ 'true' if s.current_price.is_open else 'false' }}"
+        data-lat="{{ s.lat | default('') }}"
+        data-lng="{{ s.lng | default('') }}"
+        data-e5="{{ s.current_price.e5 | float | round(3) if s.current_price.e5 else '' }}"
+        data-e10="{{ s.current_price.e10 | float | round(3) if s.current_price.e10 else '' }}"
+        data-diesel="{{ s.current_price.diesel | float | round(3) if s.current_price.diesel else '' }}">
+
+      {# Status dot (color = station's assigned chart color) #}
+      <span class="station-dot" style="background: var(--station-{{ ci }})" aria-hidden="true"></span>
+
+      {# Brand + street #}
+      <span class="station-info">
+        <span class="station-brand">{{ s.brand }}</span>
+        <span class="station-street">{{ s.street }}{% if s.house_number %} {{ s.house_number }}{% endif %}</span>
+      </span>
+
+      {# Right side: badge + price. "Details →" revealed via CSS when .selected #}
+      <span class="station-right">
+        <span class="station-badge-price">
+          <span class="badge {{ 'badge-open' if s.current_price.is_open else 'badge-closed' }}">
+            {{ 'OPEN' if s.current_price.is_open else 'CLSD' }}
+          </span>
+          <span class="station-price">
+            {% if s.current_price.is_open and s.current_price.e5 %}{{ "%.3f" | format(s.current_price.e5 | float) }}{% else %}—{% endif %}
+          </span>
+        </span>
+        {# Details button: hidden by default, shown via CSS when .selected #}
+        <a href="/station/{{ s.id }}" class="btn-details" tabindex="-1" aria-hidden="true">Details →</a>
+      </span>
+    </li>
+    {% endfor %}
+  </ul>
+
+  {# Quick stats: cheapest / highest / avg for active fuel #}
+  <div class="quick-stats" id="quick-stats" aria-live="polite">
+    <div class="stats-fuel-label" id="stats-fuel-label">E5 — today</div>
+    <div class="stats-row">
+      <div class="stat stat-cheap">
+        <span class="stat-value" id="stat-min">—</span>
+        <span class="stat-lbl">cheapest</span>
+      </div>
+      <div class="stat stat-high">
+        <span class="stat-value" id="stat-max">—</span>
+        <span class="stat-lbl">highest</span>
+      </div>
+      <div class="stat stat-avg">
+        <span class="stat-value" id="stat-avg">—</span>
+        <span class="stat-lbl">avg</span>
+      </div>
+    </div>
+  </div>
+</aside>
+
+{# ── Map ───────────────────────────────────────────────────────
+   Leaflet map fills remaining space.
+   On mobile: contains the bottom sheet for selected station.
+#}
+<div class="map-wrap" id="map-wrap">
+  <div id="map" aria-label="Station map"></div>
+
+  {# Mobile bottom sheet: slides up when a pin is tapped #}
+  <div class="bottom-sheet" id="bottom-sheet" hidden aria-live="polite" aria-label="Selected station">
+    <div class="sheet-handle" aria-hidden="true"></div>
+    <div id="sheet-body"></div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+{# ── Station data for JS ──
+   Pass all station fields needed by landing.js.
+   Backend must serialize to JSON: id, brand, street, house_number,
+   lat, lng, is_open, latest_e5, latest_e10, latest_diesel,
+   last_alert_time, color_index (= loop.index0 % 5)
+#}
+<script>window.STATION_DATA = {{ stations_json | safe }};</script>
+<script src="{{ url_for('static', path='js/landing.js') }}"></script>
+
+{# ── Mobile tab bar ───────────────────────────────────────────
+   Rendered at the bottom of the page so it sits below #page-main.
+   JS attaches click handlers from landing.js.
+#}
+<nav class="mobile-tab-bar" id="mobile-tabs" aria-label="Mobile navigation">
+  <button class="mob-tab active" data-view="map"  aria-current="true">↑ Map</button>
+  <button class="mob-tab"        data-view="list" aria-current="false">≡ List</button>
+  <a href="/charts"              class="mob-tab"  aria-current="false">◉ Charts</a>
+</nav>
+{% endblock %}

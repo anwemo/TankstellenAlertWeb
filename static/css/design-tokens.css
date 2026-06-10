@@ -1,0 +1,193 @@
+/**
+ * TankstellenAlert Design Tokens
+ * Palette 1 — Slate + Coral (primary)
+ * Font: DM Sans (Google Fonts)
+ */
+
+/* ── Import font ────────────────────────────────────────────── */
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&display=swap');
+
+/* ── Base tokens ────────────────────────────────────────────── */
+:root {
+  /* Backgrounds */
+  --bg:           #F4F5F7;
+  --surface:      #FFFFFF;
+  --surface-sel:  #E8EBF0;  /* selected / active surface */
+
+  /* Borders */
+  --border:       #C8C9CA;
+
+  /* Text */
+  --text:         #2D3142;
+  --text-muted:   #8A8E9C;
+
+  /* Navigation */
+  --nav-bg:       #2D3142;
+
+  /* Accent — steel blue, used for: selection, active pills, open badge, dot ring */
+  --accent:       #4F5D75;
+  --accent-light: #E8EBF0;
+
+  /* Alert / Warning — coral, used for: price alerts, warnings */
+  --alert:        #EF8354;
+  --alert-light:  #FDF0E9;
+  --alert-text:   #C45A28;
+
+  /* Open / Closed badges */
+  --badge-open-bg:     #E8EBF0;
+  --badge-open-border: #4F5D75;
+  --badge-open-text:   #2D3142;
+  --badge-closed-bg:   #F0F0F0;
+  --badge-closed-border: #C8C9CA;
+  --badge-closed-text: #8A8E9C;
+
+  /* Quick stats */
+  --stat-cheap-bg:  #EBF5EB;
+  --stat-cheap-bd:  #8ABE8A;
+  --stat-cheap-tx:  #2A5A2A;
+  --stat-high-bg:   #F5EBEB;
+  --stat-high-bd:   #BE8A8A;
+  --stat-high-tx:   #5A2A2A;
+}
+
+/* ── Station chart colors (equiluminant, oklch L=50% C=0.09) ── */
+:root {
+  --station-0: oklch(50% 0.09 232);  /* Shell  — steel blue  */
+  --station-1: oklch(50% 0.09 290);  /* Aral   — violet      */
+  --station-2: oklch(50% 0.09 165);  /* BP     — teal        */
+  --station-3: oklch(50% 0.09 105);  /* Total  — olive       */
+  --station-4: oklch(50% 0.09 320);  /* Esso   — mauve       */
+  /* Add more if needed at same L=50% C=0.09, new hue value */
+}
+
+/* ── Fuel type price cell colors ────────────────────────────── */
+:root {
+  --fuel-e5-bg:     #E8F2FD;
+  --fuel-e5-border: #5B9BD5;
+  --fuel-e5-text:   #1E4F80;
+
+  --fuel-e10-bg:     #EEF8E8;
+  --fuel-e10-border: #6AB55B;
+  --fuel-e10-text:   #1A5A10;
+
+  --fuel-diesel-bg:     #FDF8E0;
+  --fuel-diesel-border: #C8A000;
+  --fuel-diesel-text:   #6A5000;
+}
+
+/* ── Chart line strokes (same colors, used in SVG) ─────────── */
+:root {
+  --chart-e5-stroke:     #5B9BD5;  /* solid */
+  --chart-e10-stroke:    #6AB55B;  /* stroke-dasharray: 5,3 */
+  --chart-diesel-stroke: #C8A000;  /* stroke-dasharray: 2,4 */
+}
+
+/* ── Typography ─────────────────────────────────────────────── */
+:root {
+  --font-family: 'DM Sans', system-ui, -apple-system, sans-serif;
+
+  --text-xs:   9px;
+  --text-sm:   11px;
+  --text-base: 13px;
+  --text-md:   14px;
+  --text-lg:   16px;
+  --text-xl:   20px;
+  --text-2xl:  24px;
+
+  --font-normal:   400;
+  --font-medium:   500;
+  --font-semibold: 600;
+  --font-bold:     700;
+}
+
+/* ── Spacing (4px base grid) ────────────────────────────────── */
+:root {
+  --space-1:  4px;
+  --space-2:  8px;
+  --space-3:  12px;
+  --space-4:  16px;
+  --space-5:  20px;
+  --space-6:  24px;
+  --space-8:  32px;
+  --space-12: 48px;
+}
+
+/* ── Border radius ──────────────────────────────────────────── */
+:root {
+  --radius-sm:  4px;
+  --radius-md:  6px;
+  --radius-lg:  8px;
+  --radius-pill: 10px;  /* badges, pills */
+}
+
+/* ── Layout ─────────────────────────────────────────────────── */
+:root {
+  --nav-height:       52px;
+  --sidebar-width:    300px;
+  --tab-bar-height:   52px;
+  --charts-panel-w:   200px;
+  --bottom-sheet-r:   10px;
+}
+
+/* ── Shadows ────────────────────────────────────────────────── */
+:root {
+  --shadow-pin:      0 2px 6px rgba(0,0,0,.18);
+  --shadow-pin-sel:  0 0 0 3px var(--accent), 0 2px 10px rgba(0,0,0,.25);
+  --shadow-sheet:    0 -4px 20px rgba(0,0,0,.10);
+  --shadow-card:     0 1px 4px rgba(0,0,0,.08);
+}
+
+/* ── Map pin shape (teardrop) ───────────────────────────────── */
+.map-pin {
+  width: 14px;
+  height: 14px;
+  border-radius: 50% 50% 50% 0;
+  transform: rotate(-45deg);
+  border: 2px solid white;
+  box-shadow: var(--shadow-pin);
+}
+.map-pin.selected {
+  width: 20px;
+  height: 20px;
+  box-shadow: var(--shadow-pin-sel);
+}
+
+/* ── Utility classes ────────────────────────────────────────── */
+body {
+  font-family: var(--font-family);
+  background: var(--bg);
+  color: var(--text);
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   ALTERNATIVE: Dark Mode (Palette 2 — Purple-Gray + Sage)
+   Apply via: @media (prefers-color-scheme: dark) { ... }
+   or: [data-theme="dark"] { ... }
+   Map tiles: CartoDB Dark Matter
+   ═══════════════════════════════════════════════════════════════ */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg:           #090C08;
+    --surface:      #1E1B27;
+    --surface-sel:  #2E2A3B;
+    --border:       #3A3648;
+    --text:         #F5F7F3;
+    --text-muted:   #757083;
+    --nav-bg:       #090C08;
+    --accent:       #859D6C;   /* sage green */
+    --accent-light: #1E2A18;
+    /* alert stays the same — EF8354 coral is universal */
+    --badge-open-bg:     #1E2A18;
+    --badge-open-border: #5A7048;
+    --badge-open-text:   #A8C282;
+    --badge-closed-bg:   #1E1B27;
+    --badge-closed-border: #3A3648;
+    --badge-closed-text: #757083;
+    /* Station colors: same hues, brighter for dark backgrounds */
+    --station-0: oklch(65% 0.09 232);
+    --station-1: oklch(65% 0.09 290);
+    --station-2: oklch(65% 0.09 165);
+    --station-3: oklch(65% 0.09 105);
+    --station-4: oklch(65% 0.09 320);
+  }
+}

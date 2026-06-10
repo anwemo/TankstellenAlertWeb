@@ -1,0 +1,114 @@
+{% extends "base.html" %}
+{% set active_page = 'detail' %}
+{% block title %}{{ station.brand }} · TankstellenAlert{% endblock %}
+{% block page_class %}page-detail{% endblock %}
+
+{% block content %}
+{# ── Back nav ─────────────────────────────────────────────────── #}
+<a href="/" class="detail-back" aria-label="Back to station list">← Back</a>
+
+{# ── Hero header ──────────────────────────────────────────────── #}
+<div class="station-hero">
+  <div class="hero-brand">{{ station.brand }}</div>
+  <div class="hero-address">{{ station.street }}{% if station.house_number %} {{ station.house_number }}{% endif %}{% if station.post_code %} · {{ station.post_code }}{% endif %}{% if station.city %} {{ station.city }}{% endif %}</div>
+  <div class="hero-meta">
+    {% if latest.is_open %}
+    <span class="badge badge-open">OPEN</span>
+    {% else %}
+    <span class="badge badge-closed">CLOSED</span>
+    {% endif %}
+    {% if station.last_updated %}
+    <span class="hero-updated" id="last-updated" data-ts="{{ station.last_updated.isoformat() }}">
+      Updated {{ station.last_updated.strftime('%H:%M') }}
+    </span>
+    {% endif %}
+    {% if station.lat and station.lng %}
+    <a href="#mini-map" class="hero-map-link">Map →</a>
+    {% endif %}
+  </div>
+</div>
+
+{# ── Inline mini-map (user location + station pin) ────────────── #}
+{% if station.lat and station.lng %}
+<div id="mini-map" class="mini-map" aria-label="Station location map"
+     data-lat="{{ station.lat }}" data-lng="{{ station.lng }}"
+     data-ci="{{ station.color_index | default(0) }}"></div>
+{% endif %}
+
+{# ── Color-coded price cells ─────────────────────────────────── #}
+<div class="price-cells" role="group" aria-label="Current fuel prices">
+  <div class="price-cell e5">
+    <span class="val">{% if latest.e5 %}{{ "%.3f"|format(latest.e5|float) }}{% else %}—{% endif %}</span>
+    <span class="lbl">E5</span>
+  </div>
+  <div class="price-cell e10">
+    <span class="val">{% if latest.e10 %}{{ "%.3f"|format(latest.e10|float) }}{% else %}—{% endif %}</span>
+    <span class="lbl">E10</span>
+  </div>
+  <div class="price-cell diesel">
+    <span class="val">{% if latest.diesel %}{{ "%.3f"|format(latest.diesel|float) }}{% else %}—{% endif %}</span>
+    <span class="lbl">Diesel</span>
+  </div>
+</div>
+
+{# ── Price history chart ──────────────────────────────────────── #}
+<div class="chart-card">
+  <div class="chart-controls">
+    {# Fuel type checkboxes with line style indicators #}
+    <label class="fuel-check">
+      <input type="checkbox" name="fuel" value="e5" checked>
+      <svg width="18" height="10" aria-hidden="true"><line x1="0" y1="5" x2="18" y2="5" stroke="#5B9BD5" stroke-width="2.5"/></svg>
+      E5
+    </label>
+    <label class="fuel-check">
+      <input type="checkbox" name="fuel" value="e10" checked>
+      <svg width="18" height="10" aria-hidden="true"><line x1="0" y1="5" x2="18" y2="5" stroke="#6AB55B" stroke-width="2.5" stroke-dasharray="5,3"/></svg>
+      E10
+    </label>
+    <label class="fuel-check">
+      <input type="checkbox" name="fuel" value="diesel">
+      <svg width="18" height="10" aria-hidden="true"><line x1="0" y1="5" x2="18" y2="5" stroke="#C8A000" stroke-width="2.5" stroke-dasharray="2,4"/></svg>
+      Diesel
+    </label>
+    <select class="time-dropdown" id="range-select" aria-label="Time range">
+      <option value="1">Last 24h</option>
+      <option value="7" selected>Last 7 days</option>
+      <option value="30">Last 30 days</option>
+    </select>
+  </div>
+  <div class="chart-area">
+    <canvas id="price-chart" aria-label="Price history chart"></canvas>
+  </div>
+</div>
+
+{# ── Alert history ────────────────────────────────────────────── #}
+{% if station.last_alert_time %}
+<section class="alert-section" aria-label="Alert history">
+  <div class="section-heading">Alert History</div>
+  <div class="alert-row">
+    <span class="alert-dot-lg" aria-hidden="true"></span>
+    <div>
+      <div class="alert-title">
+        E5 dropped to {{ "%.3f"|format(station.last_alert_price|float) }}
+        {% if latest.e5 %}(−{{ "%.3f"|format((latest.e5|float) - (station.last_alert_price|float)) | replace('-','') }}){% endif %}
+      </div>
+      <div class="alert-sub">
+        {{ station.last_alert_time.strftime('%b %-d, %H:%M') }}
+      </div>
+    </div>
+  </div>
+</section>
+{% endif %}
+{% endblock %}
+
+{% block scripts %}
+{# Pass price history data and station lat/lng to JS #}
+<script>
+window.PRICE_DATA   = {{ prices_json | safe }};  {# [{time, e5, e10, diesel}, ...] #}
+window.STATION_LAT  = {{ station.lat | default('null') }};
+window.STATION_LNG  = {{ station.lng | default('null') }};
+window.STATION_CI   = {{ station.color_index | default(0) }};
+window.STATION_ID   = "{{ station.id }}";
+</script>
+<script src="{{ url_for('static', path='js/detail.js') }}"></script>
+{% endblock %}
