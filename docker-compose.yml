@@ -1,0 +1,13 @@
+services:
+  tankstellen-alert-web:
+    image: anwemo/tankstellen-alert-web:latest
+    container_name: tankstellen-alert-web
+    network_mode: bridge
+    ports:
+      - "8001:8000"
+    volumes:
+      - /volume1/docker/shared/tankstellen:/data:ro
+    environment:
+      - TZ=Europe/Berlin
+      - DB_PATH=/data/tankstellen-alert.db
+    restart: "unless-stopped"
