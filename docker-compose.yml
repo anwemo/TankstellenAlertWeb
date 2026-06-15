@@ -1,7 +1,6 @@
 services:
   tankstellen-alert-web:
     image: anwemo/tankstellen-alert-web:latest
-    container_name: tankstellen-alert-web
     network_mode: bridge
     ports:
       - "8001:8000"
