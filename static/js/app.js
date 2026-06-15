@@ -32,6 +32,13 @@ const FUEL_DASH = {
   diesel: [3, 6],
 };
 
+// half dashes on smaller screens
+if (window.innerWidth <= 680) {
+  for (const k in FUEL_DASH) {
+    FUEL_DASH[k] = FUEL_DASH[k].map(n => n / 2);
+  }
+}
+
 /** Human-readable fuel labels. */
 const FUEL_LABEL = { e5: 'E5', e10: 'E10', diesel: 'Diesel' };
 

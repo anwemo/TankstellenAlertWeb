@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>{% block title %}DEPLOY TEST TankstellenAlert{% endblock %}</title>
+  <title>{% block title %}TankstellenAlert{% endblock %}</title>
 
   <!-- Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -26,7 +26,7 @@
 
   <!-- ── Navigation ──────────────────────────────────────────── -->
   <nav id="app-nav" role="navigation" aria-label="Main navigation">
-    <a href="/" class="nav-logo" aria-label="TankstellenAlert home">TankstellenAlert 🚀DEPLOY-TEST</a>
+    <a href="/" class="nav-logo" aria-label="TankstellenAlert home">TankstellenAlert</a>
 
     {% if has_alert is defined and has_alert %}
     <button class="nav-alert-pill" type="button" aria-label="{{ alert_count }} price alert{{ 's' if alert_count != 1 else '' }}">
