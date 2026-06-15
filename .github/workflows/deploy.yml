@@ -8,7 +8,7 @@ jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
     env:
-      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true  # ← neu
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -25,5 +25,3 @@ jobs:
           context: .
           push: true
           tags: anwemo/tankstellen-alert-web:latest
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
