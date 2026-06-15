@@ -9,4 +9,3 @@ app.include_router(stations.router)
 app.include_router(pages.router)
 
 app.mount("/static", StaticFiles(directory="static"), name="static")
-

@@ -9,9 +9,7 @@ from app.dependencies import SessionDep
 from app import crud
 from app.config import BASE_DIR
 
-router = APIRouter(
-    responses={404: {"description": "Not found"}}
-)
+router = APIRouter(responses={404: {"description": "Not found"}})
 
 templates = Jinja2Templates(directory=BASE_DIR / "templates")
 
@@ -19,11 +17,13 @@ templates = Jinja2Templates(directory=BASE_DIR / "templates")
 @router.get("/", response_class=HTMLResponse)
 def landing_page(request: Request, session: SessionDep):
     stations = crud.get_all_stations_with_current_prices(session)
-    stations_json = json.dumps([station.model_dump(mode="json") for station in stations])
+    stations_json = json.dumps(
+        [station.model_dump(mode="json") for station in stations]
+    )
     return templates.TemplateResponse(
         name="landing.html",
         request=request,
-        context={"stations": stations, "stations_json": stations_json}
+        context={"stations": stations, "stations_json": stations_json},
     )
 
 
@@ -37,7 +37,7 @@ def station_detail(request: Request, station_id: str, session: SessionDep):
     return templates.TemplateResponse(
         name="detail.html",
         request=request,
-        context={"station": station, "prices_json": prices_json}
+        context={"station": station, "prices_json": prices_json},
     )
 
 
@@ -47,5 +47,5 @@ def charts_page(request: Request, session: SessionDep):
     return templates.TemplateResponse(
         name="charts.html",
         request=request,
-        context={"stations": stations, "time_periods": list(TimePeriod)}
+        context={"stations": stations, "time_periods": list(TimePeriod)},
     )

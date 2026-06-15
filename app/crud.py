@@ -53,6 +53,7 @@ def get_all_stations_with_current_prices(session: Session):
         is_open = cp.is_open if cp else False
         price = cp.e10 if cp and cp.e10 is not None else float("inf")
         return not is_open, price
+
     stations_with_prices.sort(key=sort_key)
     return stations_with_prices
 
