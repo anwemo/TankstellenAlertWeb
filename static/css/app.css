@@ -255,4 +255,5 @@ button { font-family: var(--font-family); cursor: pointer; }
   #page-main.page-detail { padding: 14px; }
   .hero-brand { font-size: 18px; }
   .price-cell .val { font-size: 18px; }
+  .chart-area { height: 320px; }
 }
