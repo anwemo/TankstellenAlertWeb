@@ -32,8 +32,9 @@
       doubleClickZoom: false, touchZoom: false, keyboard: false,
     }).setView([stLat, stLng], 15);
 
-    L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
-      attribution: '© OpenStreetMap © CARTO', subdomains: 'abcd', maxZoom: 19,
+    L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+    maxZoom: 19,
     }).addTo(miniMap);
 
     /* Station pin */
