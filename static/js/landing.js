@@ -173,11 +173,10 @@
     const bounds = L.latLngBounds(withCoords.map(s => [s.lat, s.lng]));
     leafletMap.fitBounds(bounds, { padding: [50, 50] });
 
-    /* CartoDB Positron — neutral light tiles, no API key required */
-    L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
-      attribution: '© <a href="https://openstreetmap.org">OpenStreetMap</a> contributors © <a href="https://carto.com">CARTO</a>',
-      subdomains: 'abcd',
-      maxZoom: 19,
+    /* OpenStreetMap Standard-Kacheln */
+    L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+    maxZoom: 19,
     }).addTo(leafletMap);
 
     /* Create a marker for each station */
