@@ -10,4 +10,18 @@ services:
       - TZ=Europe/Berlin
       - DB_PATH=/data/tankstellen-alert.db
       - FORWARDED_ALLOW_IPS=${FORWARDED_ALLOW_IPS:-127.0.0.1}
+    labels:
+      - wud.watch.digest=true
+      - homepage.group=Projekte
+      - homepage.name=TankstellenAlert
+      - homepage.icon=mdi-gas-station
+      - homepage.href=https://tanken.anwemo.dev
+      - homepage.widget.type=customapi
+      - homepage.widget.url=http://192.168.178.250:8001/api/stations/
+      - homepage.widget.refreshInterval=300000
+      - homepage.widget.display=dynamic-list
+      - homepage.widget.mappings.name=brand
+      - homepage.widget.mappings.label=current_price.e10
+      - "homepage.widget.mappings.suffix= €"
+      - homepage.widget.mappings.limit=10
     restart: "unless-stopped"
